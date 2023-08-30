@@ -31,21 +31,6 @@ These CSS variables are available everywhere, regardless of color mode.
 {{< /root.inline >}}
 ```
 
-### Dark mode
-
-These variables are scoped to our built-in dark mode.
-
-```css
-{{< root.inline >}}
-{{- $css := readFile "dist/css/bootstrap.css" -}}
-{{- $match := findRE `\[data-bs-theme=dark\] {([^]*)}` $css 1 -}}
-{{- if (eq (len $match) 0) -}}
-{{- errorf "Got no matches for [data-bs-theme=dark] in %q!" $.Page.Path -}}
-{{- end -}}
-{{- index $match 0 -}}
-{{< /root.inline >}}
-```
-
 ## Component variables
 
 Bootstrap 5 is increasingly making use of custom properties as local variables for various components. This way we reduce our compiled CSS, ensure styles aren't inherited in places like nested tables, and allow some basic restyling and extending of Bootstrap components after Sass compilation.
