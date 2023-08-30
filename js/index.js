@@ -1,6 +1,24 @@
+let randomWordElement, revealedLetters, hiddenword;
+
+document.addEventListener("DOMContentLoaded", function () {
+  // Assign randomWordElement when the DOM is fully loaded
+  randomWordElement = document.getElementById("randomWord");
+
+  // Fetch the first random word and initialize the game
+  fetchRandomWord();
+  start(); // Call start() to set initial visibility
+});
+
 // drawing the hangman
 
 const canvas = document.getElementById("canvas");
+function clearCanvas() {
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  draw();
+}
+
 function errorDraw1(){
   if (canvas.getContext) {
     const ctx = canvas.getContext("2d");
@@ -144,7 +162,6 @@ for (let i = 0; i < arrayOfIndexes.length; i++)
 return hiddenArray;
 }
 
-let revealedLetters, hiddenword, randomWordElement;
 let track=0; // counting the mistakes that were made
 
 // displaying the abc
@@ -155,24 +172,34 @@ lettersArray.forEach(letter => {
   const buttonElement = document.createElement('button');
   buttonElement.textContent = letter;
   buttonElement.onclick = function() {
-    checkLetterAndUpdate(letter);
+      checkLetterAndUpdate(letter, buttonElement); // Pass letter and button element
   };
   alphabetButtonsElement.appendChild(buttonElement);
 });
 
 //  changing the _ with the clicked letter in real time
 
-function checkLetterAndUpdate(letter) {
+function checkLetterAndUpdate(letter, buttonElement) {
   const foundIndexes = checkIfContains(letter, revealedLetters);
+
   if (foundIndexes.length > 0) {
-    changeFoundLetter(foundIndexes, hiddenword, revealedLetters);
-    console.log('Updated hiddenword:', hiddenword);
-    randomWordElement.textContent = hiddenword.join(' ');
+      changeFoundLetter(foundIndexes, hiddenword, revealedLetters);
+      randomWordElement.textContent = hiddenword.join(' ');
+      if (!(hiddenword.includes('_')))
+        wonTheGame();
   } else {
-    track++;
-    console.log('Letter not found in the word.');
-    errorTracking();
+      track++;
+      errorTracking();
+  }
+  // Disable the clicked button
+  buttonElement.disabled = true;
 }
+
+function enableLetterButtons() {
+  const letterButtons = document.querySelectorAll('#alphabetButtons button');
+  letterButtons.forEach(button => {
+    button.disabled = false;
+  });
 }
 
 // counting the mistakes that were made, and drawing the hangman based on progress
@@ -202,35 +229,96 @@ function errorTracking(){
       break;
     default:
       errorDraw8();
-      console.log('Game over');
+      gameOver();
   }
 }
 
 // getting a new word displaying on screen
 
-fetch('https://random-word-api.herokuapp.com/word?length=6')
-  .then(response => response.json())
-  .then(data => {
-    const randomWord = data[0];
-    console.log(randomWord);
+  function fetchRandomWord() {
+    fetch('https://random-word-api.herokuapp.com/word?length=6')
+    .then(response => response.json())
+    .then(data => {
+        const randomWord = data[0];
+        console.log(randomWord);
 
-    revealedLetters = randomWord.split(''); // converting string to array
-    
-    firstLetter = revealedLetters[0]; // getting the first letter
+        revealedLetters = randomWord.split('');
+        firstLetter = revealedLetters[0];
 
-    // revealing the first letter in every place where it accures
+        hiddenword = Array.from({ length: 6 }, (_, index) => {
+            if (revealedLetters[index] === firstLetter) {
+                return firstLetter;
+            } else {
+                return '_';
+            }
+        });
 
-    hiddenword = Array.from({ length: 6 }, (_, index) => {
-      if (revealedLetters[index] === firstLetter) {
-        return firstLetter;
-      } else {
-        return '_';
-      }
+        randomWordElement.textContent = hiddenword.join(' ');
+
+        // Update the correct word display with the revealed letters
+        const correctWordDisplay = document.getElementById("correctWordDisplay");
+        correctWordDisplay.textContent = revealedLetters.join('');
+
+    })
+    .catch(error => {
+        console.error('Error:', error);
     });
+}
+function start()
+{
+  document.getElementById("startingPage").style.visibility = "visible";
+  document.getElementById("gameingPage").style.visibility = "hidden";
+  document.getElementById("gameOverPage").style.visibility = "hidden";
+  document.getElementById("rulesPage").style.visibility = "hidden";
+  document.getElementById("winningPage").style.visibility = "hidden";
 
-    randomWordElement = document.getElementById('randomWord');
-    randomWordElement.textContent = hiddenword.join(' ');
-  })
-  .catch(error => {
-    console.error('Error:', error);
-  });
+}
+function play() {
+  // Clear hangman drawing and reset track
+  clearCanvas();
+  track = 0;
+
+  // Fetch a new random word
+  fetchRandomWord();
+
+  // Reset letter buttons to enable them
+  enableLetterButtons();
+  // Reset revealed and hidden letters arrays
+  revealedLetters = [];
+  hiddenword = [];
+
+  // Update displayed word with underscores
+  for (let i = 0; i < revealedLetters.length; i++) {
+      hiddenword.push('_');
+  }
+
+  // Hide game over page and show gaming page
+  document.getElementById("startingPage").style.visibility = "hidden";
+  document.getElementById("gameingPage").style.visibility = "visible";
+  document.getElementById("gameOverPage").style.visibility = "hidden";
+  document.getElementById("rulesPage").style.visibility = "hidden";
+  document.getElementById("winningPage").style.visibility = "hidden";
+
+}
+
+function gameOver()
+{
+
+  document.getElementById("gameOverPage").style.visibility = "visible";
+
+
+}
+function rules()
+{
+  document.getElementById("startingPage").style.visibility = "hidden";
+  document.getElementById("gameingPage").style.visibility = "hidden";
+  document.getElementById("gameOverPage").style.visibility = "hidden";
+  document.getElementById("rulesPage").style.visibility = "visible";
+  document.getElementById("winningPage").style.visibility = "hidden";
+
+}
+function wonTheGame()
+{
+  document.getElementById("winningPage").style.visibility = "visible";
+
+}

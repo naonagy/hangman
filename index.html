@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
   </head>
-  <body>
+  <body">
     <!-- background animation -->
   <div class="background-container">
     <div class="wrapper">
@@ -25,17 +25,31 @@
       <div><span class="dot"></span></div>
       <div><span class="dot"></span></div>
       <div><span class="dot"></span></div>
-      <div><span class="dot"></span></div>
+      <div><span class="dot"></span></div> 
       <div><span class="dot"></span></div>
     </div>
   </div>
 
   <!-- starting page -->
-  <div class="starting-slide-container">
-    
+  <div class="starting-slide-container page" id="startingPage">
+    <div class="container my-5">
+      <div class="p-5 text-center bg-body-tertiary rounded-3">
+        <svg class="bi mt-4 mb-3" style="color: var(--bs-indigo);" width="100" height="100"><use xlink:href="#bootstrap"></use></svg>
+        <h1 class="text-body-emphasis">Hangman</h1>
+        <div class="d-inline-flex gap-2 mb-5">
+          <button class="stButtons" type="button" onclick="play()">
+            Start game
+            <svg class="bi ms-2" width="24" height="24"><use xlink:href="#arrow-right-short"></use></svg>
+          </button>
+          <button class="stButtons" type="button" onclick="rules()">
+            How to play?
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
   <!-- actual game -->
-  <div class="game-container">
+  <div class="game-container page" id="gameingPage">
 
     <!-- hangman drawing -->
     <div class="w-100 p-2">
@@ -43,10 +57,41 @@
     </div>
         
 
-    <div id="alphabetButtons" class="m-4 justify-content-center h-100"></div>
+    <div id="alphabetButtons" class="m-4 justify-content-center"></div>
     <p id="textWithHiddenLetters"></p>
     <p id="randomWord" class="main-word h1 text-white"></p>
     <p id="foundletters" class="main-word h1 text-white" ></p>
+  </div>
+
+  <!-- Game over -->
+
+  <div class="page" id="gameOverPage">
+    <h1>Game over :)</h1>
+    <p>Your word was: <span id="correctWordDisplay"></span></p>
+    <button onclick="play()">Try again</button>
+  </div>
+
+  <!-- Game successfully finished -->
+  <div class="page" id="winningPage">
+    <div class="container my-5">
+      <div class="p-5 text-center bg-body-tertiary rounded-3">
+        <svg class="bi mt-4 mb-3" style="color: var(--bs-indigo);" width="100" height="100"><use xlink:href="#bootstrap"></use></svg>
+        <h1 class="text-body-emphasis">Congratulations</h1>
+        <div class="d-inline-flex gap-2 mb-5">
+          <button onclick="play()">One more round?</button>
+        </div>
+        <div class="d-inline-flex gap-2 mb-5">
+          <button onclick="start()">Back tot the start</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rules -->
+  <div class="page" id="rulesPage">
+    <h1>How to play?</h1>
+    <p>The object of hangman is to guess the secret word before the stick figure is hung. Players take turns selecting letters to narrow the word down. Players can take turns or work together. Gameplay continues until the players guess the word or they run out of guesses and the stick figure is hung.</p>
+    <button onclick="play()">Let's try it:)</button>
   </div>
 
   <script src="js/index.js"></script>
